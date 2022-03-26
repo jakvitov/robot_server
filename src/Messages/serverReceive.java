@@ -72,5 +72,25 @@ public class serverReceive {
         }
         return key_id;
     }
+    public int client_confirmation(){
+        int result = 0;
+        String input = "not_initialised";
+        try {
+            input = clientReader.readLine();
+        }
+        catch (IOException e){
+            System.out.println("Error while reading the message.");
+            System.exit(0);
+        }
+        input = input.substring(0, input.length()-2);
+        try {
+            result = Integer.parseInt(input);
+        }
+        catch (Exception e){
+            System.out.println("Not parsable int!");
+            System.exit(0);
+        }
+        return result;
+    }
 }
 

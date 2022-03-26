@@ -66,10 +66,7 @@ public class Server {
         //CLIENT_CONFIRM
         //Now we wait for client to send his confirmation, compute back hash and confirm or cut off comunication
         try {
-            String client_confirmation = this.clientReader.readLine();
-            //todo: check if the client confirmation has correct format
-            client_confirmation = client_confirmation.substring(0, 5);
-            int_client_confirmation = Integer.parseInt(client_confirmation);
+            int client_confirmation = this.serverReceive.client_confirmation();
             //Now we try to compute client hash again using the scanned client confirmation
             int client_hash = ((((sum * 1000) % 65536) + AutKey.getClientKey()) % 65536);
             if  (client_hash == int_client_confirmation){
