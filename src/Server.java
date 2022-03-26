@@ -2,18 +2,18 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.Map;
 import dataStruct.AutKeys;
 import dataStruct.Pair;
+import Messages.serverMsg;
 
 public class Server {
     private String suffix = "\\a\\b";
     private Socket clientSocket;
     private BufferedReader clientReader;
-    private PrintWriter clientWriter;
     private Pair AutKey;
     private AutKeys keyDatabase;
+    private serverMsg serverMsg;
     //Constructor
     public Server () {
         this.keyDatabase = new AutKeys();
@@ -24,6 +24,7 @@ public class Server {
         try {
             ServerSocket serverSocket = new ServerSocket(port_num);
             this.clientSocket = serverSocket.accept();
+            this.serverMsg = new serverMsg(this.clientSocket);
         }
         catch (IOException e){
             System.out.println("Error in opening the socket");
@@ -64,9 +65,8 @@ public class Server {
     public void keyRequest (Socket clientSocket) {
         int int_id = 0;
         try {
-            this.clientWriter = new PrintWriter(this.clientSocket.getOutputStream(), true);
             //Send the key request message
-            this.clientWriter.print("107 KEY REQUEST\\a\\b");
+            this.serverMsg.server_key_request();
             //Scan the incomming key_id
             String key_id = this.clientReader.readLine();
             //If the key_id is too long
@@ -111,7 +111,7 @@ public class Server {
         //Add the server id num to the hash
         hash = (hash + AutKey.getServerKey()) % 65536;
         //Send server confirmation to the client
-        this.clientWriter.print(hash + suffix);
+        this.serverMsg.server_confirmation(hash);
         //CLIENT_CONFIRM
         //Now we wait for client to send his confirmation, compute back hash and confirm or cut off comunication
         try {
@@ -122,10 +122,10 @@ public class Server {
             //Now we try to compute client hash again using the scanned client confirmation
             int client_hash = ((((sum * 1000) % 65536) + AutKey.getClientKey()) % 65536);
             if  (client_hash == int_client_confirmation){
-                this.clientWriter.print("200 OK" + suffix);
+                this.serverMsg.server_ok();
             }
             else {
-                this.clientWriter.print("300 LOGIN FAILED" + suffix);
+                this.serverMsg.server_login_failed();
                 clientSocket.close();
             }
         }
