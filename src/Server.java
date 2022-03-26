@@ -1,19 +1,22 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import dataStruct.AutKeys;
+import dataStruct.Pair;
 
 public class Server {
     private String suffix = "\\a\\b";
     private Socket clientSocket;
     private BufferedReader clientReader;
     private PrintWriter clientWriter;
+    private Pair AutKey;
+    private AutKeys keyDatabase;
     //Constructor
     public Server () {
-
+        this.keyDatabase = new AutKeys();
     }
     //Start server to listen on the given port number
     //Return socket to communicate with the client
@@ -22,7 +25,7 @@ public class Server {
             ServerSocket serverSocket = new ServerSocket(port_num);
             this.clientSocket = serverSocket.accept();
         }
-        catch (Exception e){
+        catch (IOException e){
             System.out.println("Error in opening the socket");
         }
     }
@@ -51,19 +54,19 @@ public class Server {
             }
             return read_name.substring(0, 17);
         }
-        catch (Exception e){
+        catch (IOException e){
            System.out.println("Error in reading the message.");
            System.exit(1);
         }
         return null;
     }
     //Server key request and key_id reading
-    public int keyRequest (Socket clientSocket) {
+    public void keyRequest (Socket clientSocket) {
         int int_id = 0;
         try {
             this.clientWriter = new PrintWriter(this.clientSocket.getOutputStream(), true);
             //Send the key request message
-            this.clientWriter.println("107 KEY REQUEST\\a\\b");
+            this.clientWriter.print("107 KEY REQUEST\\a\\b");
             //Scan the incomming key_id
             String key_id = this.clientReader.readLine();
             //If the key_id is too long
@@ -90,11 +93,37 @@ public class Server {
                 }
             }
         }
-        catch (Exception e){
+        catch (IOException e){
             System.out.println("Trouble in opening the writing stream.");
             System.exit(1);
         }
-        return int_id;
+        this.AutKey = keyDatabase.returnKeys(int_id);
+    }
+    //Server confirm message and hash computing
+    public void serverConfirm(int client_key, String client_name){
+        //First we calculate the hast from the client_key id
+        int sum = 0;
+        int int_client_confirmation = 0;
+        for (int i = 0; i < client_name.length(); i++){
+            sum += client_name.charAt(i);
+        }
+        int hash = (sum * 1000) % 65536;
+        //Add the server id num to the hash
+        hash = (hash + AutKey.getServerKey()) % 65536;
+        //Send server confirmation to the client
+        this.clientWriter.print(hash + suffix);
+        //CLIENT_CONFIRM
+        //Now we wait for client to send his confirmation, compute back hash and confirm or cut off comunication
+        try {
+            String client_confirmation = this.clientReader.readLine();
+            //todo: check if the client confirmation has correct format
+            client_confirmation = client_confirmation.substring(0, 4);
+            int_client_confirmation = Integer.parseInt(client_confirmation);
+        }
+        catch (IOException e){
+            System.out.println("Error while reading/parsing client_confirmation message");
+            System.exit(0);
+        }
     }
 
     public static void main(String[] args) {
