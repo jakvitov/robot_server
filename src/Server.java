@@ -6,6 +6,7 @@ import java.util.Map;
 import dataStruct.AutKeys;
 import dataStruct.Pair;
 import Messages.serverMsg;
+import Messages.serverReceive;
 
 public class Server {
     private String suffix = "\\a\\b";
@@ -14,6 +15,7 @@ public class Server {
     private Pair AutKey;
     private AutKeys keyDatabase;
     private serverMsg serverMsg;
+    private serverReceive serverReceive;
     //Constructor
     public Server () {
         this.keyDatabase = new AutKeys();
@@ -25,6 +27,7 @@ public class Server {
             ServerSocket serverSocket = new ServerSocket(port_num);
             this.clientSocket = serverSocket.accept();
             this.serverMsg = new serverMsg(this.clientSocket);
+            this.serverReceive = new serverReceive(this.clientSocket);
         }
         catch (IOException e){
             System.out.println("Error in opening the socket");
@@ -33,70 +36,18 @@ public class Server {
     //Get username from each robot
     public String readName () {
         try {
-            this.clientReader = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream()));
-            String read_name = clientReader.readLine();
-            //If the username is too long or too short
-            if (read_name.length() != 22){
-                System.out.println("Too short / too long client name");
-                this.clientSocket.close();
-                System.exit(1);
-            }
-            //If the name contains the correct suffix inside
-            else if (read_name.substring(0, 17).contains(suffix)){
-                System.out.println("Client name contains /a/b");
-                this.clientSocket.close();
-                System.exit(1);
-            }
-            //If the end of the message does not include the requiered suffix
-            else if (!read_name.substring(18, 21).contains(suffix)){
-                System.out.println("Client name contains /a/b");
-                this.clientSocket.close();
-                System.exit(1);
-            }
-            return read_name.substring(0, 17);
+          String clientName = this.serverReceive.client_username();
+          return clientName;
         }
-        catch (IOException e){
+        catch (Exception e){
            System.out.println("Error in reading the message.");
            System.exit(1);
         }
-        return null;
+    return null;
     }
     //Server key request and key_id reading
     public void keyRequest (Socket clientSocket) {
-        int int_id = 0;
-        try {
-            //Send the key request message
-            this.serverMsg.server_key_request();
-            //Scan the incomming key_id
-            String key_id = this.clientReader.readLine();
-            //If the key_id is too long
-            if (key_id.length() > 3 + suffix.length() || key_id.length() <= suffix.length()){
-                System.out.println("Too long key_id!");
-                this.clientSocket.close();
-                System.exit(1);
-            }
-            else if (!(key_id.substring(key_id.length() - suffix.length(), key_id.length() - 1).contains(suffix))){
-                System.out.println("No suffix in the key");
-                this.clientSocket.close();
-                System.exit(1);
-            }
-            //Finally parse the key into and int and return it
-            else {
-                try {
-                    key_id = key_id.substring(0, key_id.length() - suffix.length());
-                    int_id = Integer.parseInt(key_id);
-                }
-                catch (NumberFormatException NFE){
-                    System.out.println("Key id is not parseable!");
-                    this.clientSocket.close();
-                    System.exit(1);
-                }
-            }
-        }
-        catch (IOException e){
-            System.out.println("Trouble in opening the writing stream.");
-            System.exit(1);
-        }
+        int int_id = this.serverReceive.client_key_id();
         this.AutKey = keyDatabase.returnKeys(int_id);
     }
     //Server confirm message and hash computing
