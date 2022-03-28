@@ -7,6 +7,7 @@ import dataStruct.AutKeys;
 import dataStruct.Pair;
 import Messages.serverMsg;
 import Messages.serverReceive;
+import Exceptions.RobotBlockedException;
 
 public class Server {
     private String suffix = "\\a\\b";
@@ -16,9 +17,11 @@ public class Server {
     private AutKeys keyDatabase;
     private serverMsg serverMsg;
     private serverReceive serverReceive;
+    private Pair prev_coord;
     //Constructor
     public Server () {
         this.keyDatabase = new AutKeys();
+        this.prev_coord = null;
     }
     //Start server to listen on the given port number
     //Return socket to communicate with the client
@@ -81,6 +84,22 @@ public class Server {
             System.out.println("Error while reading/parsing client_confirmation message");
             System.exit(0);
         }
+    }
+    //Move the robot forward and return his actual coordinates
+    public Pair moveForward() throws RobotBlockedException{
+        serverMsg.server_move();
+        Pair position = this.serverReceive.client_ok();
+        //We check for obstacle in our way
+        if (prev_coord.equals(null)){
+            prev_coord = position;
+        }
+        else if (this.prev_coord.equals(position)){
+            throw new RobotBlockedException();
+        }
+        else {
+            this.prev_coord = position;
+        }
+        return position;
     }
 
     public static void main(String[] args) {

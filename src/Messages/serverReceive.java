@@ -1,5 +1,7 @@
 package Messages;
 
+import dataStruct.Pair;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -88,8 +90,32 @@ public class serverReceive {
         }
         catch (Exception e){
             System.out.println("Not parsable int!");
+            this.serverMsg.server_syntax_error();
+            this.closeConnection();
+        }
+        return result;
+    }
+    public Pair client_ok (){
+        String input = "not_initialised";
+        try {
+            input = this.clientReader.readLine();
+        }
+        catch (IOException e){
+            System.out.println("Error whiel reading the message");
             System.exit(0);
         }
+        int x = -1;
+        int y = -1;
+        try {
+            x = Integer.parseInt(input.substring(3,4));
+            y = Integer.parseInt(input.substring(5, 6));
+        }
+        catch (Exception e){
+            System.out.println("Not parsable int!");
+            this.serverMsg.server_syntax_error();
+            this.closeConnection();
+        }
+        Pair result = new Pair(x, y);
         return result;
     }
 }
