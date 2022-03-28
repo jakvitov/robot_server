@@ -85,9 +85,9 @@ public class Server {
             System.exit(0);
         }
     }
-    //Move the robot forward and return his actual coordinates
+    //Move the robot forward and return his actual coordinates, detect is he is blocked
     public Pair moveForward() throws RobotBlockedException{
-        serverMsg.server_move();
+        this.serverMsg.server_move();
         Pair position = this.serverReceive.client_ok();
         //We check for obstacle in our way
         if (prev_coord.equals(null)){
@@ -99,6 +99,18 @@ public class Server {
         else {
             this.prev_coord = position;
         }
+        return position;
+    }
+    //Move the robot right
+    public Pair moveRight(){
+        this.serverMsg.server_turn_right();
+        Pair position = this.serverReceive.client_ok();
+        return position;
+    }
+    //Move the robot left
+    public Pair moveLeft(){
+        this.serverMsg.server_turn_left();
+        Pair position = this.serverReceive.client_ok();
         return position;
     }
 

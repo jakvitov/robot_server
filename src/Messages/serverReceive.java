@@ -104,8 +104,8 @@ public class serverReceive {
             System.out.println("Error whiel reading the message");
             System.exit(0);
         }
-        int x = -1;
-        int y = -1;
+        int x = -10901;
+        int y = -10901;
         try {
             x = Integer.parseInt(input.substring(3,4));
             y = Integer.parseInt(input.substring(5, 6));
@@ -117,6 +117,39 @@ public class serverReceive {
         }
         Pair result = new Pair(x, y);
         return result;
+    }
+    //Robot fully charged message
+    public boolean client_full_power(){
+        String input = "not_initialised";
+        try {
+            input = this.clientReader.readLine();
+        }
+        catch (IOException IOE){
+            System.out.println("Error while reading from the input buffer.");
+            return false;
+        }
+        if (input.equals("FULL POWER" + suffix)){
+            return true;
+        }
+        return false;
+    }
+    //If we receive robot recharging message
+    public void client_recharging(){
+        try {
+            this.clientSocket.setSoTimeout(5 * 1000);
+            if (this.client_full_power()) {
+                return;
+            }
+            else {
+                this.serverMsg.server_logic_error();
+                this.closeConnection();
+            }
+        }
+        catch (java.net.SocketException SE){
+         //The socket timeouted
+         serverMsg.server_logic_error();
+         this.closeConnection();
+        }
     }
 }
 
