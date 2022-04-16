@@ -7,8 +7,9 @@ public class ClientHandler implements Runnable{
     private PrintWriter clientWriter;
     private BufferedReader clientReader;
     private Socket clientSocket;
+    private String suffix = "\\a\\b";
 
-    public void ClientHandler (){
+    public ClientHandler (Socket clientSocket){
 
     }
 
