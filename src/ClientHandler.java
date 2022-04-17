@@ -31,6 +31,15 @@ public class ClientHandler implements Runnable{
         }
     }
 
+    public void closeClient(){
+        try {
+            this.clientSocket.close();
+        }
+        catch (IOException IOE){
+            System.out.println("Error while closing the client socket!");
+        }
+    }
+
     public boolean getClientName (){
         String message = new String();
 
@@ -48,11 +57,47 @@ public class ClientHandler implements Runnable{
             System.out.println("Wrong input client name: " + message);
             this.clientWriter.println("301 SYNTAX ERROR\\a\\b");
             this.clientWriter.flush();
+            this.closeClient();
             return false;
         }
 
         StringTokenizer tokenizer = new StringTokenizer(message, this.suffix);
         this.client.username = tokenizer.nextToken();
+        return true;
+    }
+
+    public boolean getClienID (){
+
+        this.clientWriter.println("107 KEY REQUEST\\a\\b");
+        this.clientWriter.flush();
+
+        //Now we listen for the response
+        String message = new String();
+        while ((message.contains(this.suffix) == false) && (message.length() < 6)){
+            try {
+                message += this.clientReader.readLine();
+            }
+            catch (IOException IOE){
+                System.out.println("Error while reading from the client socket");
+                return false;
+            }
+        }
+
+        StringTokenizer tokenizer = new StringTokenizer(message, this.suffix);
+        //We check if we have the suffix in the message
+        if (tokenizer.hasMoreTokens() == false){
+            return false;
+        }
+        //Now we extract the client AutKey number from the string and set current aut. key based on it
+        try {
+            Integer keyID = Integer.parseInt(tokenizer.nextToken());
+            this.client.keyID = keyID;
+            this.autKey = this.keyDatabase.returnKeys(this.client.keyID);
+        }
+        catch (NumberFormatException NFE){
+            System.out.println("The client ID is not a number!");
+            return false;
+        }
         return true;
     }
 
