@@ -101,6 +101,55 @@ public class ClientHandler implements Runnable{
         return true;
     }
 
+    public boolean serverConfirmation (){
+        //First we calculate the hash from the client name as required
+        int hash = 0;
+        for (int i = 0; i < this.client.username.length(); i++){
+            hash += this.client.username.charAt(i);
+        }
+        hash = (hash * 1000) % 65536;
+
+        this.clientWriter.println(Integer.toString((hash + this.autKey.getServerKey()) % 65536) + this.suffix);
+        this.clientWriter.flush();
+
+        //Now we read the client confirmation message and compare the two hashes
+        String message = new String();
+        while ((message.contains(this.suffix) == false) && (message.length() < 7)){
+            try {
+                message += this.clientReader.readLine();
+            }
+            catch (IOException IOE){
+                System.out.println("Error while reading from the client socket!");
+                return false;
+            }
+        }
+
+        StringTokenizer tokenizer = new StringTokenizer(message, this.suffix);
+        if (tokenizer.hasMoreTokens() == false){
+            return false;
+        }
+
+        Integer clientHash;
+        try {
+            clientHash = Integer.parseInt(tokenizer.nextToken());
+        }
+        catch (NumberFormatException NFE){
+            System.out.println("Client confirmation hash contains other symbols than numbers!");
+            return false;
+        }
+
+        if (clientHash.equals((hash + this.autKey.getClientKey()) % 65536) == false){
+            System.out.println("Server login failed!");
+            this.clientWriter.println("300 LOGIN FAILED\\a\\b\t");
+            this.clientWriter.flush();
+            return false;
+        }
+
+        this.clientWriter.println("200 OK\\a\\b");
+        this.clientWriter.flush();
+        return true;
+    }
+
     @Override
     public void run (){
 
