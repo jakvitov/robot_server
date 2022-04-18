@@ -1,3 +1,4 @@
+import Functional.Tokenizer;
 import dataStruct.AutKeys;
 import dataStruct.Client;
 import dataStruct.Pair;
@@ -7,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.StringTokenizer;
 
 public class ClientHandler implements Runnable{
 
@@ -63,7 +63,7 @@ public class ClientHandler implements Runnable{
             return false;
         }
 
-        StringTokenizer tokenizer = new StringTokenizer(message, this.suffix);
+        Tokenizer tokenizer = new Tokenizer(message, this.suffix);
         this.client.username = tokenizer.nextToken();
         return true;
     }
@@ -85,12 +85,13 @@ public class ClientHandler implements Runnable{
             }
         }
         message = message.replace("\n", "");
-        StringTokenizer tokenizer = new StringTokenizer(message, this.suffix);
+        Tokenizer tokenizer = new Tokenizer(message, this.suffix);
         //We check if we have the suffix in the message
         if (tokenizer.hasMoreTokens() == false || message.length() >5){
             System.out.println("Not valid client id " + message);
+            this.clientWriter.println("301 SYNTAX ERROR\\a\\b");
+            this.clientWriter.flush();
             this.closeClient();
-            return false;
         }
         //Now we extract the client AutKey number from the string and set current aut. key based on it
         try {
@@ -112,7 +113,9 @@ public class ClientHandler implements Runnable{
         }
         catch (NumberFormatException NFE){
             System.out.println("The client ID is not a number!");
-            return false;
+            this.clientWriter.println("301 SYNTAX ERROR\\a\\b");
+            this.clientWriter.flush();
+            this.closeClient();
         }
         return true;
     }
@@ -124,6 +127,8 @@ public class ClientHandler implements Runnable{
             hash += this.client.username.charAt(i);
         }
         hash = (hash * 1000) % 65536;
+
+        System.out.println("basic hash : " + hash);
 
         this.clientWriter.println(Integer.toString((hash + this.autKey.getServerKey()) % 65536) + this.suffix);
         this.clientWriter.flush();
@@ -140,7 +145,8 @@ public class ClientHandler implements Runnable{
             }
         }
 
-        StringTokenizer tokenizer = new StringTokenizer(message, this.suffix);
+        message = message.replace("\n", "");
+        Tokenizer tokenizer = new Tokenizer(message, this.suffix);
         if (tokenizer.hasMoreTokens() == false){
             System.out.println("Wrong message format: " + message);
             this.clientWriter.println("301 SYNTAX ERROR\\a\\b");
@@ -154,6 +160,9 @@ public class ClientHandler implements Runnable{
         }
         catch (NumberFormatException NFE){
             System.out.println("Client confirmation hash contains other symbols than numbers!");
+            this.clientWriter.println("301 SYNTAX ERROR\\a\\b");
+            this.clientWriter.flush();
+            this.closeClient();
             return false;
         }
 
@@ -175,9 +184,7 @@ public class ClientHandler implements Runnable{
     @Override
     public void run (){
         //This suggests that some reading exception etc. has occured
-        if (this.getClientName() == false ||
-        this.getClienID() == false ||
-        this.serverConfirmation() == false) {
+        if (this.getClientName() == false || this.getClienID() == false || this.serverConfirmation() == false) {
             return;
         }
         System.out.println("Logged in all right!");
