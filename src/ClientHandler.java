@@ -45,7 +45,7 @@ public class ClientHandler implements Runnable{
 
         while ((message.contains(this.suffix) == false) && (message.length() < 21)){
             try {
-                message += this.clientReader.readLine();
+                message += this.clientReader.read();
             }
             catch (IOException IOE){
                 System.out.println("Error while reading from the client socket!");
@@ -75,7 +75,7 @@ public class ClientHandler implements Runnable{
         String message = new String();
         while ((message.contains(this.suffix) == false) && (message.length() < 6)){
             try {
-                message += this.clientReader.readLine();
+                message += this.clientReader.read();
             }
             catch (IOException IOE){
                 System.out.println("Error while reading from the client socket");
@@ -116,7 +116,7 @@ public class ClientHandler implements Runnable{
         String message = new String();
         while ((message.contains(this.suffix) == false) && (message.length() < 7)){
             try {
-                message += this.clientReader.readLine();
+                message += this.clientReader.read();
             }
             catch (IOException IOE){
                 System.out.println("Error while reading from the client socket!");
@@ -126,7 +126,10 @@ public class ClientHandler implements Runnable{
 
         StringTokenizer tokenizer = new StringTokenizer(message, this.suffix);
         if (tokenizer.hasMoreTokens() == false){
-            return false;
+            System.out.println("Wrong message format: " + message);
+            this.clientWriter.println("301 SYNTAX ERROR\\a\\b");
+            this.clientWriter.flush();
+            this.closeClient();
         }
 
         Integer clientHash;
@@ -142,6 +145,7 @@ public class ClientHandler implements Runnable{
             System.out.println("Server login failed!");
             this.clientWriter.println("300 LOGIN FAILED\\a\\b\t");
             this.clientWriter.flush();
+            this.closeClient();
             return false;
         }
 
@@ -150,9 +154,18 @@ public class ClientHandler implements Runnable{
         return true;
     }
 
+
+
     @Override
     public void run (){
-
+        //This suggests that some reading exception etc. has occured
+        if (this.getClientName() == false || this.getClienID() == false || this.serverConfirmation() == false){
+            System.out.println("Uncontrollable exception was raised!");
+            this.closeClient();
+        }
+        System.out.println("Logged in all right!");
+        System.out.println(this.client.username);
+        System.out.println(this.client.keyID);
     }
 
 }
