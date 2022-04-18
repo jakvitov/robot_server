@@ -23,6 +23,11 @@ public class ClientReader implements  Runnable{
             String message = new String();
             try {
                 message = this.clientReader.readLine();
+
+                if (message == null){
+                    System.exit(1);
+                }
+
                 System.out.println(message);
             }
             catch (IOException IOE){

@@ -32,14 +32,29 @@ public class ClientTester {
 
     public void message (){
 
-        Thread thread = new Thread(new ClientReader(this.reader));
-        thread.start();
-
         Scanner scan = new Scanner(System.in);
         System.out.println("Enter your message:");
         String message = scan.nextLine();
         this.writer.println(message + suffix);
         this.writer.flush();
+    }
+
+    public static void main(String[] args) {
+
+        try {
+            Thread.sleep(3000);
+        }
+        catch (InterruptedException IOE){
+            System.out.println("Error while sleeping in the thread.");
+        }
+
+        ClientTester client = new ClientTester();
+        Thread thread = new Thread(new ClientReader(client.reader));
+        thread.start();
+
+        while (true) {
+            client.message();
+        }
     }
 
 }

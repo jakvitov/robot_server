@@ -23,6 +23,8 @@ public class ClientHandler implements Runnable{
         try {
             this.clientWriter = new PrintWriter(clientSocket.getOutputStream());
             this.clientReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            this.clientSocket = clientSocket;
+            this.client = new Client();
             keyDatabase = new AutKeys();
         }
         catch (IOException IOE){
@@ -45,14 +47,14 @@ public class ClientHandler implements Runnable{
 
         while ((message.contains(this.suffix) == false) && (message.length() < 21)){
             try {
-                message += this.clientReader.read();
+                message += (char)this.clientReader.read();
             }
             catch (IOException IOE){
                 System.out.println("Error while reading from the client socket!");
                 System.exit(1);
             }
         }
-
+        System.out.println("Client name - " + message);
         if (message.contains(this.suffix) == false || message.length() == this.suffix.length()){
             System.out.println("Wrong input client name: " + message);
             this.clientWriter.println("301 SYNTAX ERROR\\a\\b");
@@ -75,24 +77,38 @@ public class ClientHandler implements Runnable{
         String message = new String();
         while ((message.contains(this.suffix) == false) && (message.length() < 6)){
             try {
-                message += this.clientReader.read();
+                message += (char)this.clientReader.read();
             }
             catch (IOException IOE){
                 System.out.println("Error while reading from the client socket");
                 return false;
             }
         }
-
+        message = message.replace("\n", "");
         StringTokenizer tokenizer = new StringTokenizer(message, this.suffix);
         //We check if we have the suffix in the message
-        if (tokenizer.hasMoreTokens() == false){
+        if (tokenizer.hasMoreTokens() == false || message.length() >5){
+            System.out.println("Not valid client id " + message);
+            this.closeClient();
             return false;
         }
         //Now we extract the client AutKey number from the string and set current aut. key based on it
         try {
-            Integer keyID = Integer.parseInt(tokenizer.nextToken());
-            this.client.keyID = keyID;
-            this.autKey = this.keyDatabase.returnKeys(this.client.keyID);
+            String strKeyID = tokenizer.nextToken();
+            System.out.println("Key id: " + strKeyID);
+            Integer keyID = Integer.parseInt(strKeyID);
+
+            //Now we need to check if the key is in the available range
+            if (keyID > 0 && keyID < 5){
+                this.client.keyID = keyID;
+                this.autKey = this.keyDatabase.returnKeys(this.client.keyID);
+            }
+            else {
+                System.out.println("The key is out of the permissible range.");
+                this.clientWriter.println("303 KEY OUT OF RANGE\\a\\b");
+                this.clientWriter.flush();
+                return false;
+            }
         }
         catch (NumberFormatException NFE){
             System.out.println("The client ID is not a number!");
@@ -116,7 +132,7 @@ public class ClientHandler implements Runnable{
         String message = new String();
         while ((message.contains(this.suffix) == false) && (message.length() < 7)){
             try {
-                message += this.clientReader.read();
+                message += (char)this.clientReader.read();
             }
             catch (IOException IOE){
                 System.out.println("Error while reading from the client socket!");
@@ -159,9 +175,10 @@ public class ClientHandler implements Runnable{
     @Override
     public void run (){
         //This suggests that some reading exception etc. has occured
-        if (this.getClientName() == false || this.getClienID() == false || this.serverConfirmation() == false){
-            System.out.println("Uncontrollable exception was raised!");
-            this.closeClient();
+        if (this.getClientName() == false ||
+        this.getClienID() == false ||
+        this.serverConfirmation() == false) {
+            return;
         }
         System.out.println("Logged in all right!");
         System.out.println(this.client.username);
