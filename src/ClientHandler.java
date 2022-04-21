@@ -1,4 +1,5 @@
 import Activity.Mover;
+import Activity.Picker;
 import Functional.Tokenizer;
 import dataStruct.AutKeys;
 import dataStruct.Client;
@@ -199,13 +200,16 @@ public class ClientHandler implements Runnable{
             System.out.println("Error while initing the client");
             this.closeClient();
         }
-
         if (mover.navigator() == false){
             System.out.println("Error while navigatinng the client to the diagonal!");
-            this.closeClient();
         }
 
-        System.out.println("Innit ok");
+        //Now we pick up the message
+        Picker picker = new Picker(this.clientWriter, this.clientReader, this.clientSocket);
+        if (picker.pickUp() == false){
+            System.out.println("Error while picking up the message!");
+        }
+
     }
 
 }

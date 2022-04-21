@@ -192,12 +192,16 @@ public class Mover {
             //This part only works for the first quadrant
             if (this.lastCoord.getX() > this.lastCoord.getY()){
                 if (this.moveLeft() == false){
+                    this.clientWriter.println("301 SYNTAX ERROR\\a\\b");
+                    this.clientWriter.flush();
                     return false;
                 }
             }
             //Y  > X
             else {
                 if (this.moveDown() == false){
+                    this.clientWriter.println("301 SYNTAX ERROR\\a\\b");
+                    this.clientWriter.flush();
                     return false;
                 }
             }
@@ -207,9 +211,13 @@ public class Mover {
         //Now we get him to 0:0
         while(this.lastCoord.isFinal() == false){
             if (this.moveDown() == false){
+                this.clientWriter.println("301 SYNTAX ERROR\\a\\b");
+                this.clientWriter.flush();
                 return false;
             }
             if (this.moveLeft() == false){
+                this.clientWriter.println("301 SYNTAX ERROR\\a\\b");
+                this.clientWriter.flush();
                 return false;
             }
         }
