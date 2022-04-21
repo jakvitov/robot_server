@@ -11,6 +11,10 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+/**
+ * Client handler takes care of the individual clients in a separate thread
+ */
+
 public class ClientHandler implements Runnable{
 
     private PrintWriter clientWriter;
