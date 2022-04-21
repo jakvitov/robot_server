@@ -2,6 +2,8 @@ package dataStruct;
 
 import java.util.Objects;
 
+import static dataStruct.Facing.*;
+
 /**
  * A basic data structure representing coordinates in the two dimensional linear
  * coordination Cartesian system
@@ -55,5 +57,27 @@ public class Coord {
 
     public void printCoord (){
         System.out.println("X: "+ this.x + " Y: " + this.y);
+    }
+
+
+    //Based on the two coordinates given, decide which way is the robot facing
+    public Facing getDirection(Coord prev, Coord now){
+        if ((prev.x - now.x) == 0){
+          if ((prev.y - now.y) == -1){
+              return UP;
+          }
+          else {
+              return DOWN;
+          }
+        }
+        //((prev.y - now.y) == 0)
+        else {
+            if ((prev.x - now.x) == -1){
+                return RIGHT;
+            }
+            else {
+                return LEFT;
+            }
+        }
     }
 }

@@ -2,6 +2,7 @@ package Activity;
 
 import Functional.Tokenizer;
 import dataStruct.Coord;
+import dataStruct.Facing;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,6 +13,8 @@ import java.util.StringTokenizer;
 /**
  * This class is used to move the robots around and navigate them to the [0,0] coordinate
  * to pick up the treasure
+ *
+ *
  */
 
 public class Mover {
@@ -20,6 +23,7 @@ public class Mover {
     private BufferedReader clientReader;
     private Socket clientSocket;
     private String suffix = "\\a\\b";
+    private Facing facing;
     private int errorFlag = -111111;
     private Coord lastCoord;
 
@@ -68,11 +72,19 @@ public class Mover {
     public void turnRight (){
         this.clientWriter.println("104 TURN RIGHT\\a\\b");
         this.clientWriter.flush();
+
+        if (this.facing != null){
+            this.facing = this.facing.next();
+        }
     }
 
     public void turnLeft (){
         this.clientWriter.println("103 TURN LEFT\\a\\b\t");
         this.clientWriter.flush();
+
+        if (this.facing != null){
+            this.facing = this.facing.next();
+        }
     }
 
     public void goForward (){
@@ -81,25 +93,31 @@ public class Mover {
     }
 
     //A method used to get the starting coordinates from the robot
+    //And to get the way we are facting with the robot
     public boolean init (){
         this.turnLeft();
         this.lastCoord = this.clientOk();
 
-        if (this.lastCoord == null) {
-            return false;
-        }
-
         if (this.lastCoord.errorFlag()){
             return false;
         }
 
-        this.turnRight();
-        if (this.lastCoord.errorFlag()){
+        this.goForward();
+        Coord newCoord = this.clientOk();
+
+        if (newCoord.errorFlag()){
             return false;
         }
+
+        this.facing = newCoord.getDirection(this.lastCoord, newCoord);
+        this.lastCoord = newCoord;
+
+        System.out.println("Last coordinates: ");
         this.lastCoord.printCoord();
+        System.out.println("Facing: " + this.facing);
         return true;
     }
+
 
 
 }
