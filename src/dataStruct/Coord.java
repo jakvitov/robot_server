@@ -47,7 +47,7 @@ public class Coord {
     }
 
     public boolean areEqual (){
-        if (x.equals(y)){
+        if (this.x == this.y){
             return true;
         }
         else {
@@ -78,6 +78,15 @@ public class Coord {
             else {
                 return LEFT;
             }
+        }
+    }
+
+    public boolean isFinal(){
+        if (this.x == 0 && this.y == 0){
+            return true;
+        }
+        else {
+            return false;
         }
     }
 }

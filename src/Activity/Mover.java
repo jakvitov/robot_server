@@ -92,6 +92,70 @@ public class Mover {
         this.clientWriter.flush();
     }
 
+    //Method used to move the robot one left  ( + [-1,0])
+    public boolean moveLeft (){
+
+        while (this.facing.equals(Facing.LEFT) == false){
+            this.turnRight();
+            this.lastCoord = clientOk();
+        }
+
+        this.goForward();
+        this.lastCoord = clientOk();
+        if (this.lastCoord.errorFlag()){
+            return false;
+        }
+        return true;
+    }
+
+    //Method used to move the robot one right  ( + [1,0])
+    public boolean moveRight (){
+
+        while (this.facing != Facing.RIGHT){
+            this.turnRight();
+            this.lastCoord = clientOk();
+        }
+
+        this.goForward();
+        this.lastCoord = clientOk();
+        if (this.lastCoord.errorFlag()){
+            return false;
+        }
+        return true;
+    }
+
+    //Method used to move the robot one up  ( + [0,1])
+    public boolean moveUP (){
+
+        while (this.facing != Facing.UP){
+            this.turnRight();
+            this.lastCoord = clientOk();
+        }
+
+        this.goForward();
+        this.lastCoord = clientOk();
+        if (this.lastCoord.errorFlag()){
+            return false;
+        }
+        return true;
+    }
+    //Method used to move the robot one down  ( + [0,-1])
+    public boolean moveDown (){
+
+        while (this.facing != Facing.DOWN){
+            this.turnRight();
+            this.lastCoord = clientOk();
+        }
+
+        this.goForward();
+        this.lastCoord = clientOk();
+        if (this.lastCoord.errorFlag()){
+            return false;
+        }
+        return true;
+    }
+
+
     //A method used to get the starting coordinates from the robot
     //And to get the way we are facting with the robot
     public boolean init (){
@@ -112,12 +176,46 @@ public class Mover {
         this.facing = newCoord.getDirection(this.lastCoord, newCoord);
         this.lastCoord = newCoord;
 
-        System.out.println("Last coordinates: ");
-        this.lastCoord.printCoord();
-        System.out.println("Facing: " + this.facing);
         return true;
     }
 
+    //A method used to navigate the robot to the [0,0] after the init method has been used
 
+    /**
+     * Out main goal is to get the robot to the point where both of the coordinates are equal [x,x], than we can
+     * move him down the diagonal which is the shortest patha at that moment
+     * Return true when the robot reaches [0,0]
+     */
+    public boolean navigator (){
+        //First we get him to the diagonal
+        while (this.lastCoord.areEqual() == false){
+            //This part only works for the first quadrant
+            if (this.lastCoord.getX() > this.lastCoord.getY()){
+                if (this.moveLeft() == false){
+                    return false;
+                }
+            }
+            //Y  > X
+            else {
+                if (this.moveDown() == false){
+                    return false;
+                }
+            }
+
+        }
+
+        //Now we get him to 0:0
+        while(this.lastCoord.isFinal() == false){
+            if (this.moveDown() == false){
+                return false;
+            }
+            if (this.moveLeft() == false){
+                return false;
+            }
+        }
+        System.out.println("Reached destination: ");
+        this.lastCoord.printCoord();
+        return true;
+    }
 
 }

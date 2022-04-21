@@ -200,6 +200,11 @@ public class ClientHandler implements Runnable{
             this.closeClient();
         }
 
+        if (mover.navigator() == false){
+            System.out.println("Error while navigatinng the client to the diagonal!");
+            this.closeClient();
+        }
+
         System.out.println("Innit ok");
     }
 
