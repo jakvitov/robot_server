@@ -52,4 +52,8 @@ public class Coord {
             return false;
         }
     }
+
+    public void printCoord (){
+        System.out.println("X: "+ this.x + " Y: " + this.y);
+    }
 }

@@ -23,7 +23,7 @@ public class Mover {
     private int errorFlag = -111111;
     private Coord lastCoord;
 
-    public void Mover (PrintWriter clientWriter, BufferedReader clientReader, Socket clientSocket){
+    public Mover (PrintWriter clientWriter, BufferedReader clientReader, Socket clientSocket){
         this.clientReader = clientReader;
         this.clientWriter = clientWriter;
         this.clientSocket = clientSocket;
@@ -32,8 +32,7 @@ public class Mover {
     //A method used to get the coordinates from the client ok messages
     public Coord clientOk(){
         String message = new String();
-        while (message.contains(this.suffix) == false || message.length() < 13) {
-
+        while (message.contains(this.suffix) == false && message.length() < 13) {
             try {
                 message += (char) this.clientReader.read();
             } catch (IOException IOE) {
@@ -48,6 +47,7 @@ public class Mover {
         }
 
         message = message.replace(this.suffix, "");
+        message = message.replace("\n", "");
         StringTokenizer tokenizer = new StringTokenizer(message, " ");
         if (tokenizer.countTokens() != 3){
             System.out.println("The message has a wrong format: " + message);
@@ -81,7 +81,7 @@ public class Mover {
     }
 
     //A method used to get the starting coordinates from the robot
-    public boolean innit (){
+    public boolean init (){
         this.turnLeft();
         this.lastCoord = this.clientOk();
 
@@ -97,7 +97,7 @@ public class Mover {
         if (this.lastCoord.errorFlag()){
             return false;
         }
-
+        this.lastCoord.printCoord();
         return true;
     }
 

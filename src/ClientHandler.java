@@ -1,3 +1,4 @@
+import Activity.Mover;
 import Functional.Tokenizer;
 import dataStruct.AutKeys;
 import dataStruct.Client;
@@ -179,7 +180,7 @@ public class ClientHandler implements Runnable{
         return true;
     }
 
-    
+
 
     @Override
     public void run (){
@@ -190,6 +191,16 @@ public class ClientHandler implements Runnable{
         System.out.println("Logged in all right!");
         System.out.println(this.client.username);
         System.out.println(this.client.keyID);
+
+        //Now we start to move the client to the [0:0]
+        Mover mover = new Mover(this.clientWriter, this.clientReader, this.clientSocket);
+
+        if (mover.init() == false){
+            System.out.println("Error while initing the client");
+            this.closeClient();
+        }
+
+        System.out.println("Innit ok");
     }
 
 }
