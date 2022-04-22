@@ -11,11 +11,18 @@ import java.net.Socket;
 
 public class Server {
 
-    private String suffix = "\\a\\b";
+    char a = 0x07;
+    char b = 0x08;
     private AutKeys keyDatabase;
     private ServerSocket serverSocket;
+    public String suffix;
 
     public Server (int portNum){
+        suffix = new String();
+        suffix += (char)(a);
+        suffix += (char)(b);
+        System.out.println(suffix);
+
         try {
             this.serverSocket = new ServerSocket(portNum);
             System.out.println("Server started listening on port " + portNum);
@@ -42,7 +49,7 @@ public class Server {
                 continue;
             }
 
-            Thread clientThread = new Thread(new ClientHandler(client));
+            Thread clientThread = new Thread(new ClientHandler(client, server.suffix));
             clientThread.start();
 
         }

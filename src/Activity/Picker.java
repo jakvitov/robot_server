@@ -13,12 +13,13 @@ public class Picker {
     private PrintWriter clientWriter;
     private BufferedReader clientReader;
     private Socket clientSocket;
-    private String suffix = "\\a\\b";
+    private String suffix;
 
-    public Picker (PrintWriter clientWriter, BufferedReader clientReader, Socket clientSocket){
+    public Picker (PrintWriter clientWriter, BufferedReader clientReader, Socket clientSocket, String suffix){
         this.clientWriter = clientWriter;
         this.clientReader = clientReader;
         this.clientSocket = clientSocket;
+        this.suffix = suffix;
     }
 
     public boolean pickUp (){

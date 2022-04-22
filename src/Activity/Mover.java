@@ -22,15 +22,16 @@ public class Mover {
     private PrintWriter clientWriter;
     private BufferedReader clientReader;
     private Socket clientSocket;
-    private String suffix = "\\a\\b";
+    private String suffix;
     private Facing facing;
     private int errorFlag = -111111;
     private Coord lastCoord;
 
-    public Mover (PrintWriter clientWriter, BufferedReader clientReader, Socket clientSocket){
+    public Mover (PrintWriter clientWriter, BufferedReader clientReader, Socket clientSocket, String suffix){
         this.clientReader = clientReader;
         this.clientWriter = clientWriter;
         this.clientSocket = clientSocket;
+        this.suffix = suffix;
     }
 
     //A method used to get the coordinates from the client ok messages

@@ -23,10 +23,11 @@ public class ClientHandler implements Runnable{
     private AutKeys keyDatabase;
     private Pair autKey;
     private Client client;
-    private String suffix = "\\a\\b";
+    private String suffix;
 
-    public ClientHandler (Socket clientSocket){
+    public ClientHandler (Socket clientSocket, String suffix){
         try {
+            this.suffix = suffix;
             this.clientWriter = new PrintWriter(clientSocket.getOutputStream());
             this.clientReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             this.clientSocket = clientSocket;
@@ -198,7 +199,7 @@ public class ClientHandler implements Runnable{
         System.out.println(this.client.keyID);
 
         //Now we start to move the client to the [0:0]
-        Mover mover = new Mover(this.clientWriter, this.clientReader, this.clientSocket);
+        Mover mover = new Mover(this.clientWriter, this.clientReader, this.clientSocket, this.suffix);
 
         if (mover.init() == false){
             System.out.println("Error while initing the client");
@@ -209,7 +210,7 @@ public class ClientHandler implements Runnable{
         }
 
         //Now we pick up the message
-        Picker picker = new Picker(this.clientWriter, this.clientReader, this.clientSocket);
+        Picker picker = new Picker(this.clientWriter, this.clientReader, this.clientSocket, this.suffix);
         if (picker.pickUp() == false){
             System.out.println("Error while picking up the message!");
         }

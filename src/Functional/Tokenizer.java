@@ -21,7 +21,7 @@ public class Tokenizer {
     }
 
     public boolean hasMoreTokens (){
-        if (this.text.contains("\\a\\b")){
+        if (this.text.contains(this.token)){
             return true;
         }
         return false;
@@ -29,7 +29,7 @@ public class Tokenizer {
 
     //A method that returns next part of the text before next token
     public String nextToken(){
-        return this.text.replace("\\a\\b", "");
+        return this.text.replace(this.token, "");
     }
 
 }
