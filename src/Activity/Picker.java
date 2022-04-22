@@ -30,20 +30,20 @@ public class Picker {
             }
             catch (IOException IOE){
                 System.out.println("Error while reading from the client reader!");
-                this.clientWriter.println("301 SYNTAX ERROR\\a\\b");
+                this.clientWriter.println("301 SYNTAX ERROR" + this.suffix);
                 this.clientWriter.flush();
                 return false;
             }
         }
 
         if (message.contains(this.suffix) == false){
-            this.clientWriter.println("301 SYNTAX ERROR\\a\\b");
+            this.clientWriter.println("301 SYNTAX ERROR" + this.suffix);
             this.clientWriter.flush();
             return false;
         }
 
         //We socessfully picked up the message so we log out
-        this.clientWriter.println("106 LOGOUT\\a\\b");
+        this.clientWriter.println("106 LOGOUT" + this.suffix);
         this.clientWriter.flush();
         return true;
     }

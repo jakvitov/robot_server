@@ -71,7 +71,7 @@ public class Mover {
     }
 
     public void turnRight (){
-        this.clientWriter.println("104 TURN RIGHT\\a\\b");
+        this.clientWriter.println("104 TURN RIGHT" + this.suffix);
         this.clientWriter.flush();
 
         if (this.facing != null){
@@ -80,7 +80,7 @@ public class Mover {
     }
 
     public void turnLeft (){
-        this.clientWriter.println("103 TURN LEFT\\a\\b\t");
+        this.clientWriter.println("103 TURN LEFT"+ this.suffix);
         this.clientWriter.flush();
 
         if (this.facing != null){
@@ -89,7 +89,7 @@ public class Mover {
     }
 
     public void goForward (){
-        this.clientWriter.println("\t102 MOVE\\a\\b");
+        this.clientWriter.println("102 MOVE" + this.suffix);
         this.clientWriter.flush();
     }
 
@@ -193,7 +193,7 @@ public class Mover {
             //This part only works for the first quadrant
             if (this.lastCoord.getX() > this.lastCoord.getY()){
                 if (this.moveLeft() == false){
-                    this.clientWriter.println("301 SYNTAX ERROR\\a\\b");
+                    this.clientWriter.println("301 SYNTAX ERROR" + this.suffix);
                     this.clientWriter.flush();
                     return false;
                 }
@@ -201,7 +201,7 @@ public class Mover {
             //Y  > X
             else {
                 if (this.moveDown() == false){
-                    this.clientWriter.println("301 SYNTAX ERROR\\a\\b");
+                    this.clientWriter.println("301 SYNTAX ERROR" + this.suffix);
                     this.clientWriter.flush();
                     return false;
                 }
@@ -212,12 +212,12 @@ public class Mover {
         //Now we get him to 0:0
         while(this.lastCoord.isFinal() == false){
             if (this.moveDown() == false){
-                this.clientWriter.println("301 SYNTAX ERROR\\a\\b");
+                this.clientWriter.println("301 SYNTAX ERROR" + this.suffix);
                 this.clientWriter.flush();
                 return false;
             }
             if (this.moveLeft() == false){
-                this.clientWriter.println("301 SYNTAX ERROR\\a\\b");
+                this.clientWriter.println("301 SYNTAX ERROR" + this.suffix);
                 this.clientWriter.flush();
                 return false;
             }

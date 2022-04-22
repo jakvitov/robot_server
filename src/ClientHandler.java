@@ -64,7 +64,7 @@ public class ClientHandler implements Runnable{
         System.out.println("Client name - " + message);
         if (message.contains(this.suffix) == false || message.length() == this.suffix.length()){
             System.out.println("Wrong input client name: " + message);
-            this.clientWriter.println("301 SYNTAX ERROR\\a\\b");
+            this.clientWriter.print("301 SYNTAX ERROR\\a\\b");
             this.clientWriter.flush();
             this.closeClient();
             return false;
@@ -77,7 +77,7 @@ public class ClientHandler implements Runnable{
 
     public boolean getClienID (){
 
-        this.clientWriter.println("107 KEY REQUEST\\a\\b");
+        this.clientWriter.print("107 KEY REQUEST" + this.suffix);
         this.clientWriter.flush();
 
         //Now we listen for the response
@@ -91,12 +91,11 @@ public class ClientHandler implements Runnable{
                 return false;
             }
         }
-        message = message.replace("\n", "");
         Tokenizer tokenizer = new Tokenizer(message, this.suffix);
         //We check if we have the suffix in the message
         if (tokenizer.hasMoreTokens() == false || message.length() >5){
             System.out.println("Not valid client id " + message);
-            this.clientWriter.println("301 SYNTAX ERROR\\a\\b");
+            this.clientWriter.print("301 SYNTAX ERROR" + this.suffix);
             this.clientWriter.flush();
             this.closeClient();
         }
@@ -107,20 +106,20 @@ public class ClientHandler implements Runnable{
             Integer keyID = Integer.parseInt(strKeyID);
 
             //Now we need to check if the key is in the available range
-            if (keyID > 0 && keyID < 5){
+            if (keyID >= 0 && keyID < 5){
                 this.client.keyID = keyID;
                 this.autKey = this.keyDatabase.returnKeys(this.client.keyID);
             }
             else {
                 System.out.println("The key is out of the permissible range.");
-                this.clientWriter.println("303 KEY OUT OF RANGE\\a\\b");
+                this.clientWriter.print("303 KEY OUT OF RANGE" + this.suffix);
                 this.clientWriter.flush();
                 return false;
             }
         }
         catch (NumberFormatException NFE){
             System.out.println("The client ID is not a number!");
-            this.clientWriter.println("301 SYNTAX ERROR\\a\\b");
+            this.clientWriter.print("301 SYNTAX ERROR" + this.suffix);
             this.clientWriter.flush();
             this.closeClient();
         }
@@ -137,14 +136,14 @@ public class ClientHandler implements Runnable{
 
         System.out.println("basic hash : " + hash);
 
-        this.clientWriter.println(Integer.toString((hash + this.autKey.getServerKey()) % 65536) + this.suffix);
+        this.clientWriter.print(Integer.toString((hash + this.autKey.getServerKey()) % 65536) + this.suffix);
         this.clientWriter.flush();
 
         //Now we read the client confirmation message and compare the two hashes
         String message = new String();
         while ((message.contains(this.suffix) == false) && (message.length() < 9)){
             try {
-                message += (char)this.clientReader.read();
+                message += (char) this.clientReader.read();
             }
             catch (IOException IOE){
                 System.out.println("Error while reading from the client socket!");
@@ -152,22 +151,21 @@ public class ClientHandler implements Runnable{
             }
         }
 
-        message = message.replace("\n", "");
         Tokenizer tokenizer = new Tokenizer(message, this.suffix);
         if (tokenizer.hasMoreTokens() == false){
             System.out.println("Wrong message format: " + message);
-            this.clientWriter.println("301 SYNTAX ERROR\\a\\b");
+            this.clientWriter.print("301 SYNTAX ERROR" + this.suffix);
             this.clientWriter.flush();
             this.closeClient();
         }
-
+        message = tokenizer.nextToken();
         Integer clientHash;
         try {
-            clientHash = Integer.parseInt(tokenizer.nextToken());
+            clientHash = Integer.parseInt(message);
         }
         catch (NumberFormatException NFE){
             System.out.println("Client confirmation hash contains other symbols than numbers!");
-            this.clientWriter.println("301 SYNTAX ERROR\\a\\b");
+            this.clientWriter.print("301 SYNTAX ERROR" + this.suffix);
             this.clientWriter.flush();
             this.closeClient();
             return false;
@@ -175,13 +173,13 @@ public class ClientHandler implements Runnable{
 
         if (clientHash.equals((hash + this.autKey.getClientKey()) % 65536) == false){
             System.out.println("Server login failed!");
-            this.clientWriter.println("300 LOGIN FAILED\\a\\b\t");
+            this.clientWriter.print("300 LOGIN FAILED" + this.suffix);
             this.clientWriter.flush();
             this.closeClient();
             return false;
         }
 
-        this.clientWriter.println("200 OK\\a\\b");
+        this.clientWriter.print("200 OK" + this.suffix);
         this.clientWriter.flush();
         return true;
     }
