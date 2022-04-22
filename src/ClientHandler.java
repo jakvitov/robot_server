@@ -114,6 +114,7 @@ public class ClientHandler implements Runnable{
                 System.out.println("The key is out of the permissible range.");
                 this.clientWriter.print("303 KEY OUT OF RANGE" + this.suffix);
                 this.clientWriter.flush();
+                this.closeClient();
                 return false;
             }
         }
@@ -188,6 +189,12 @@ public class ClientHandler implements Runnable{
 
     @Override
     public void run (){
+        try {
+            this.clientSocket.setSoTimeout(1000);
+        }
+        catch (IOException IOE){
+            System.out.println("error");
+        }
         //This suggests that some reading exception etc. has occured
         if (this.getClientName() == false || this.getClienID() == false || this.serverConfirmation() == false) {
             return;

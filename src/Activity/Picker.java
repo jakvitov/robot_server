@@ -45,6 +45,7 @@ public class Picker {
                 System.out.println("Error while reading from the client reader!");
                 this.clientWriter.print("301 SYNTAX ERROR" + this.suffix);
                 this.clientWriter.flush();
+                this.closeClient();
                 return false;
             }
         }
