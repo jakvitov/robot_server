@@ -159,11 +159,15 @@ public class Mover {
     //A method used to get the starting coordinates from the robot
     //And to get the way we are facting with the robot
     public boolean init (){
-        this.turnLeft();
+        this.goForward();
         this.lastCoord = this.clientOk();
 
         if (this.lastCoord.errorFlag()){
             return false;
+        }
+
+        if (this.lastCoord.isFinal()){
+            return true;
         }
 
         this.goForward();
