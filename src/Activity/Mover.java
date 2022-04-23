@@ -23,9 +23,9 @@ public class Mover {
     private BufferedReader clientReader;
     private Socket clientSocket;
     private String suffix;
-    private Facing facing;
     private int errorFlag = -111111;
-    private Coord lastCoord;
+    public Facing facing;
+    public Coord lastCoord;
 
     public Mover (PrintWriter clientWriter, BufferedReader clientReader, Socket clientSocket, String suffix){
         this.clientReader = clientReader;
@@ -203,39 +203,10 @@ public class Mover {
      * Return true when the robot reaches [0,0]
      */
     public boolean navigator (){
-        //First we get him to the diagonal
-        while (this.lastCoord.areEqual() == false){
-            //This part only works for the first quadrant
-            if (this.lastCoord.getX() > this.lastCoord.getY()){
-                if (this.moveLeft() == false){
-                    this.clientWriter.print("301 SYNTAX ERROR" + this.suffix);
-                    this.clientWriter.flush();
-                    return false;
-                }
-            }
-            //Y  > X
-            else {
-                if (this.moveDown() == false){
-                    this.clientWriter.print("301 SYNTAX ERROR" + this.suffix);
-                    this.clientWriter.flush();
-                    return false;
-                }
-            }
+        Navigator navigator = new Navigator(this.clientWriter, this.clientReader, this, this.suffix);
 
-        }
-
-        //Now we get him to 0:0
-        while(this.lastCoord.isFinal() == false){
-            if (this.moveDown() == false){
-                this.clientWriter.print("301 SYNTAX ERROR" + this.suffix);
-                this.clientWriter.flush();
-                return false;
-            }
-            if (this.moveLeft() == false){
-                this.clientWriter.print("301 SYNTAX ERROR" + this.suffix);
-                this.clientWriter.flush();
-                return false;
-            }
+        if (navigator.navigateToDiagonal() == false|| navigator.navigateToEnd() == false){
+            return false;
         }
         System.out.println("Reached destination: ");
         this.lastCoord.printCoord();
