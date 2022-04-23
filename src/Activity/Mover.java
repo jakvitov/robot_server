@@ -98,6 +98,10 @@ public class Mover {
         while (this.facing.equals(Facing.LEFT) == false){
             this.turnRight();
             this.lastCoord = clientOk();
+
+            if (this.lastCoord.errorFlag()){
+                return false;
+            }
         }
 
         this.goForward();
@@ -130,6 +134,10 @@ public class Mover {
         while (this.facing != Facing.UP){
             this.turnRight();
             this.lastCoord = clientOk();
+
+            if (this.lastCoord.errorFlag()){
+                return false;
+            }
         }
 
         this.goForward();
@@ -145,6 +153,10 @@ public class Mover {
         while (this.facing != Facing.DOWN){
             this.turnRight();
             this.lastCoord = clientOk();
+
+            if (this.lastCoord.errorFlag()){
+                return false;
+            }
         }
 
         this.goForward();

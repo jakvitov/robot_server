@@ -67,11 +67,6 @@ public class ClientHandler implements Runnable{
             try {
                 message += (char)this.clientReader.read();
             }
-            catch (SocketTimeoutException STE){
-                this.closeClient();
-                System.out.println("Client timed out!");
-                return false;
-            }
             catch (IOException IOE){
                 System.out.println("Error while reading from the client socket!");
                 this.closeClient();
@@ -162,11 +157,6 @@ public class ClientHandler implements Runnable{
         while ((message.contains(this.suffix) == false) && (message.length() < 9)){
             try {
                 message += (char) this.clientReader.read();
-            }
-            catch (SocketTimeoutException STE){
-                System.out.println("The client timed out!");
-                this.closeClient();
-                return false;
             }
             catch (IOException IOE){
                 System.out.println("Error while reading from the client socket!");
