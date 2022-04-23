@@ -51,6 +51,8 @@ public class Mover {
         }
         if (message == null || message.contains(this.suffix) == false){
             System.out.println("The coord message is null or without suffix!");
+            this.clientWriter.print("301 SYNTAX ERROR" + this.suffix);
+            this.clientWriter.flush();
             return new Coord(this.errorFlag, this.errorFlag);
         }
 
@@ -58,6 +60,8 @@ public class Mover {
         StringTokenizer tokenizer = new StringTokenizer(message, " ");
         if (tokenizer.countTokens() != 3){
             System.out.println("The message has a wrong format: " + message);
+            this.clientWriter.print("301 SYNTAX ERROR" + this.suffix);
+            this.clientWriter.flush();
             return new Coord(this.errorFlag, this.errorFlag);
         }
 
