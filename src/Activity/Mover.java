@@ -3,6 +3,7 @@ package Activity;
 import Functional.Tokenizer;
 import dataStruct.Coord;
 import dataStruct.Facing;
+import dataStruct.Quadrant;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,6 +28,7 @@ public class Mover {
     public Facing facing;
     public Coord lastCoord;
     public Coord prevCoord;
+    public Quadrant quadrant;
 
     public Mover (PrintWriter clientWriter, BufferedReader clientReader, Socket clientSocket, String suffix){
         this.clientReader = clientReader;
@@ -199,7 +201,8 @@ public class Mover {
             return false;
         }
 
-        //If the robot is blocked at the init
+        //If the robot is blocked at the init, in that case we turn and move to get different
+        //Last known coordinates
         if (this.lastCoord.equals(this.prevCoord)){
             System.out.println("Blocked at the start!");
             this.prevCoord = this.lastCoord;
@@ -214,7 +217,7 @@ public class Mover {
         }
 
         this.facing = this.lastCoord.getDirection(this.prevCoord, this.lastCoord);
-
+        this.quadrant = this.lastCoord.getQuadrant();
         return true;
     }
 

@@ -89,4 +89,8 @@ public class Coord {
             return false;
         }
     }
+
+    public Quadrant getQuadrant (){
+        return Quadrant.FIRST;
+    }
 }

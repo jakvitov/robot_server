@@ -23,9 +23,34 @@ public class Navigator {
         this.suffix = suffix;
     }
 
+    public boolean checkBlock (){
+        if (this.mover.lastCoord.equals(this.mover.prevCoord)){
+            return true;
+        }
+        return false;
+    }
+
+    public void dodgeBlock (){
+        if (this.mover.facing.equals(Facing.LEFT)){
+            this.mover.moveDown();
+            this.mover.moveLeft();
+            this.mover.moveLeft();
+        }
+        else if (this.mover.facing.equals(Facing.DOWN)){
+            this.mover.moveLeft();
+            this.mover.moveDown();
+            this.mover.moveDown();
+        }
+    }
+
     //Method that navigates the robot to the diagonal
     public boolean navigateToDiagonal (){
         while (this.mover.lastCoord.areEqual() == false){
+
+            if (this.checkBlock()){
+                this.dodgeBlock();
+            }
+
             //This part only works for the first quadrant
             if (this.mover.lastCoord.getX() > this.mover.lastCoord.getY()){
                 if (this.mover.moveLeft() == false){
