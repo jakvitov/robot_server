@@ -40,7 +40,7 @@ public class Navigator {
     }
 
     public Facing getSecondDirection (){
-        if (this.mover.quadrant.equals(Quadrant.SECOND) || this.mover.quadrant.equals(Quadrant.FIRST)){
+        if (this.mover.quadrant.equals(Quadrant.SECOND) || this.mover.quadrant.equals(Quadrant.FOURTH)){
             return Facing.LEFT;
         }
         else {
@@ -60,7 +60,7 @@ public class Navigator {
 
     //First third -> right, Second, fourth -> left
     public boolean quadrantSecondMove (){
-        if (this.mover.quadrant.equals(Quadrant.SECOND) || this.mover.quadrant.equals(Quadrant.FIRST)){
+        if (this.mover.quadrant.equals(Quadrant.SECOND) || this.mover.quadrant.equals(Quadrant.THIRD)){
             return this.mover.moveLeft();
         }
         else {
@@ -87,13 +87,14 @@ public class Navigator {
         System.out.println("quadrant: " + this.mover.quadrant);
 
         while (this.mover.lastCoord.areEqual() == false){
+            this.mover.quadrant = this.mover.lastCoord.getQuadrant();
 
             if (this.checkBlock()){
                 this.dodgeBlock();
             }
 
             //This part only works for the first quadrant
-            if (this.mover.lastCoord.getX() > this.mover.lastCoord.getY()){
+            if (Math.abs(this.mover.lastCoord.getX()) > Math.abs(this.mover.lastCoord.getY())){
                 if (this.quadrantSecondMove() == false){
                     this.clientWriter.print("301 SYNTAX ERROR" + this.suffix);
                     this.clientWriter.flush();
@@ -116,6 +117,13 @@ public class Navigator {
     //A method that navigates robot to the [0:0] on the diagonal
     public boolean navigateToEnd(){
         while(this.mover.lastCoord.isFinal() == false){
+            this.mover.quadrant = this.mover.lastCoord.getQuadrant();
+
+            if (this.checkBlock()){
+                this.dodgeBlock();
+            }
+
+            //this.mover.lastCoord.printCoord();
             if (quadrantFirstMove() == false){
                 this.clientWriter.print("301 SYNTAX ERROR" + this.suffix);
                 this.clientWriter.flush();
