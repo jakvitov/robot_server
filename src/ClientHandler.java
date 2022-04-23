@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 
 /**
  * Client handler takes care of the individual clients in a separate thread
@@ -49,6 +50,16 @@ public class ClientHandler implements Runnable{
         }
     }
 
+    public void setTimeout (int time){
+        try {
+          this.clientSocket.setSoTimeout(time);
+        }
+        catch (IOException IOE){
+            System.out.println("Error while setting up the timeout.");
+            return;
+        }
+    }
+
     public boolean getClientName (){
         String message = new String();
 
@@ -56,9 +67,15 @@ public class ClientHandler implements Runnable{
             try {
                 message += (char)this.clientReader.read();
             }
+            catch (SocketTimeoutException STE){
+                this.closeClient();
+                System.out.println("Client timed out!");
+                return false;
+            }
             catch (IOException IOE){
                 System.out.println("Error while reading from the client socket!");
-                System.exit(1);
+                this.closeClient();
+                return false;
             }
         }
         System.out.println("Client name - " + message);
@@ -146,8 +163,14 @@ public class ClientHandler implements Runnable{
             try {
                 message += (char) this.clientReader.read();
             }
+            catch (SocketTimeoutException STE){
+                System.out.println("The client timed out!");
+                this.closeClient();
+                return false;
+            }
             catch (IOException IOE){
                 System.out.println("Error while reading from the client socket!");
+                this.closeClient();
                 return false;
             }
         }
@@ -189,12 +212,9 @@ public class ClientHandler implements Runnable{
 
     @Override
     public void run (){
-        try {
-            this.clientSocket.setSoTimeout(1000);
-        }
-        catch (IOException IOE){
-            System.out.println("error");
-        }
+
+        this.setTimeout(1000);
+
         //This suggests that some reading exception etc. has occured
         if (this.getClientName() == false || this.getClienID() == false || this.serverConfirmation() == false) {
             return;
