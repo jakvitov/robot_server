@@ -199,6 +199,20 @@ public class Mover {
             return false;
         }
 
+        //If the robot is blocked at the init
+        if (this.lastCoord.equals(this.prevCoord)){
+            System.out.println("Blocked at the start!");
+            this.prevCoord = this.lastCoord;
+            this.turnRight();
+            this.clientOk();
+            this.goForward();
+            this.lastCoord = this.clientOk();
+
+            if (lastCoord.errorFlag()){
+                return false;
+            }
+        }
+
         this.facing = this.lastCoord.getDirection(this.prevCoord, this.lastCoord);
 
         return true;
