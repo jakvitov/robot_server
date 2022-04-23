@@ -154,7 +154,7 @@ public class ClientHandler implements Runnable{
 
         //Now we read the client confirmation message and compare the two hashes
         String message = new String();
-        while ((message.contains(this.suffix) == false) && (message.length() < 8)){
+        while ((message.contains(this.suffix) == false) && (message.length() < 6)){
             try {
                 message += (char) this.clientReader.read();
             }
