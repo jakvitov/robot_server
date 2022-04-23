@@ -64,7 +64,15 @@ public class Mover {
         try {
             //We skip the first token, that is the OK in the message
                tokenizer.nextToken();
-               return new Coord(Integer.parseInt(tokenizer.nextToken()), Integer.parseInt(tokenizer.nextToken()));
+               Coord result = new Coord(Integer.parseInt(tokenizer.nextToken()), Integer.parseInt(tokenizer.nextToken()));
+               //We check if the message doesn't include more data, than permitted (other than numbers)
+               if (message.charAt(message.length() - 1) < '0' || message.charAt(message.length() - 1) > '9'){
+                   System.out.println("MESSAGE: " + message.charAt(message.length() - 1));
+                   this.clientWriter.print("301 SYNTAX ERROR" + this.suffix);
+                   this.clientWriter.flush();
+                   return new Coord(this.errorFlag, this.errorFlag);
+               }
+               return result;
         }
         catch (NumberFormatException NFE){
             System.out.println("The coordinates do not include numbers: " + message);
