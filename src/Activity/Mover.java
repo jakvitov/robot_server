@@ -68,6 +68,8 @@ public class Mover {
         }
         catch (NumberFormatException NFE){
             System.out.println("The coordinates do not include numbers: " + message);
+            this.clientWriter.print("301 SYNTAX ERROR" + this.suffix);
+            this.clientWriter.flush();
             return new Coord(this.errorFlag, this.errorFlag);
         }
     }
