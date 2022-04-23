@@ -149,8 +149,13 @@ public class ClientHandler implements Runnable{
 
         System.out.println("basic hash : " + hash);
 
-        this.clientWriter.print(Integer.toString((hash + this.autKey.getServerKey()) % 65536) + this.suffix);
-        this.clientWriter.flush();
+        if (this.autKey != null) {
+            this.clientWriter.print(Integer.toString((hash + this.autKey.getServerKey()) % 65536) + this.suffix);
+            this.clientWriter.flush();
+        }
+        else {
+            return false;
+        }
 
         //Now we read the client confirmation message and compare the two hashes
         String message = new String();
