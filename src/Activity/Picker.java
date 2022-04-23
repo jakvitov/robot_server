@@ -37,7 +37,7 @@ public class Picker {
         this.clientWriter.flush();
 
         String message = new String();
-        while ((message.contains(this.suffix) == false) && message.length() < 101){
+        while ((message.contains(this.suffix) == false) && message.length() < 100){
             try {
                 message += (char) this.clientReader.read();
             }

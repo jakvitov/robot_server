@@ -63,7 +63,7 @@ public class ClientHandler implements Runnable{
     public boolean getClientName (){
         String message = new String();
 
-        while ((message.contains(this.suffix) == false) && (message.length() < 21)){
+        while ((message.contains(this.suffix) == false) && (message.length() < 20)){
             try {
                 message += (char)this.clientReader.read();
             }
@@ -76,7 +76,7 @@ public class ClientHandler implements Runnable{
         System.out.println("Client name - " + message);
         if (message.contains(this.suffix) == false || message.length() == this.suffix.length()){
             System.out.println("Wrong input client name: " + message);
-            this.clientWriter.print("301 SYNTAX ERROR\\a\\b");
+            this.clientWriter.print("301 SYNTAX ERROR" + this.suffix);
             this.clientWriter.flush();
             this.closeClient();
             return false;
@@ -94,7 +94,7 @@ public class ClientHandler implements Runnable{
 
         //Now we listen for the response
         String message = new String();
-        while ((message.contains(this.suffix) == false) && (message.length() < 6)){
+        while ((message.contains(this.suffix) == false) && (message.length() < 5)){
             try {
                 message += (char)this.clientReader.read();
             }
@@ -154,7 +154,7 @@ public class ClientHandler implements Runnable{
 
         //Now we read the client confirmation message and compare the two hashes
         String message = new String();
-        while ((message.contains(this.suffix) == false) && (message.length() < 9)){
+        while ((message.contains(this.suffix) == false) && (message.length() < 8)){
             try {
                 message += (char) this.clientReader.read();
             }
@@ -229,7 +229,5 @@ public class ClientHandler implements Runnable{
         if (picker.pickUp() == false){
             System.out.println("Error while picking up the message!");
         }
-
     }
-
 }
