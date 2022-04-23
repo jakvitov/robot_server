@@ -82,6 +82,9 @@ public class Coord {
     }
 
     public boolean isFinal(){
+
+        System.out.println("Final ");
+        this.printCoord();
         if (this.x == 0 && this.y == 0){
             return true;
         }

@@ -60,7 +60,7 @@ public class Navigator {
 
     //First third -> right, Second, fourth -> left
     public boolean quadrantSecondMove (){
-        if (this.mover.quadrant.equals(Quadrant.SECOND) || this.mover.quadrant.equals(Quadrant.THIRD)){
+        if (this.mover.quadrant.equals(Quadrant.SECOND) || this.mover.quadrant.equals(Quadrant.FOURTH)){
             return this.mover.moveLeft();
         }
         else {
@@ -129,6 +129,11 @@ public class Navigator {
                 this.clientWriter.flush();
                 return false;
             }
+
+            if (this.mover.lastCoord.isFinal()){
+                break;
+            }
+
             if (this.quadrantSecondMove() == false){
                 this.clientWriter.print("301 SYNTAX ERROR" + this.suffix);
                 this.clientWriter.flush();
