@@ -26,6 +26,7 @@ public class Mover {
     private int errorFlag = -111111;
     public Facing facing;
     public Coord lastCoord;
+    public Coord prevCoord;
 
     public Mover (PrintWriter clientWriter, BufferedReader clientReader, Socket clientSocket, String suffix){
         this.clientReader = clientReader;
@@ -105,6 +106,7 @@ public class Mover {
         }
 
         this.goForward();
+        this.prevCoord = this.lastCoord;
         this.lastCoord = clientOk();
         if (this.lastCoord.errorFlag()){
             return false;
@@ -125,6 +127,7 @@ public class Mover {
         }
 
         this.goForward();
+        this.prevCoord = this.lastCoord;
         this.lastCoord = clientOk();
         if (this.lastCoord.errorFlag()){
             return false;
@@ -145,6 +148,7 @@ public class Mover {
         }
 
         this.goForward();
+        this.prevCoord = this.lastCoord;
         this.lastCoord = clientOk();
         if (this.lastCoord.errorFlag()){
             return false;
@@ -164,6 +168,7 @@ public class Mover {
         }
 
         this.goForward();
+        this.prevCoord = this.lastCoord;
         this.lastCoord = clientOk();
         if (this.lastCoord.errorFlag()){
             return false;
@@ -187,14 +192,14 @@ public class Mover {
         }
 
         this.goForward();
-        Coord newCoord = this.clientOk();
+        this.prevCoord = this.lastCoord;
+        this.lastCoord = this.clientOk();
 
-        if (newCoord.errorFlag()){
+        if (lastCoord.errorFlag()){
             return false;
         }
 
-        this.facing = newCoord.getDirection(this.lastCoord, newCoord);
-        this.lastCoord = newCoord;
+        this.facing = this.lastCoord.getDirection(this.prevCoord, this.lastCoord);
 
         return true;
     }
