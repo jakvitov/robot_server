@@ -30,21 +30,62 @@ public class Navigator {
         return false;
     }
 
-    public void dodgeBlock (){
-        if (this.mover.facing.equals(Facing.LEFT)){
-            this.mover.moveDown();
-            this.mover.moveLeft();
-            this.mover.moveLeft();
+    public Facing getFirstDirection (){
+        if (this.mover.quadrant.equals(Quadrant.SECOND) || this.mover.quadrant.equals(Quadrant.FIRST)){
+            return Facing.DOWN;
         }
-        else if (this.mover.facing.equals(Facing.DOWN)){
-            this.mover.moveLeft();
-            this.mover.moveDown();
-            this.mover.moveDown();
+        else {
+            return Facing.UP;
+        }
+    }
+
+    public Facing getSecondDirection (){
+        if (this.mover.quadrant.equals(Quadrant.SECOND) || this.mover.quadrant.equals(Quadrant.FIRST)){
+            return Facing.LEFT;
+        }
+        else {
+            return Facing.RIGHT;
+        }
+    }
+
+    //First, second -> down, Third and fourth -> up
+    public boolean quadrantFirstMove (){
+        if (this.mover.quadrant.equals(Quadrant.SECOND) || this.mover.quadrant.equals(Quadrant.FIRST)){
+            return this.mover.moveDown();
+        }
+        else {
+            return this.mover.moveUP();
+        }
+    }
+
+    //First third -> right, Second, fourth -> left
+    public boolean quadrantSecondMove (){
+        if (this.mover.quadrant.equals(Quadrant.SECOND) || this.mover.quadrant.equals(Quadrant.FIRST)){
+            return this.mover.moveLeft();
+        }
+        else {
+            return this.mover.moveRight();
+        }
+    }
+
+    public void dodgeBlock (){
+        if (this.mover.facing.equals(this.getSecondDirection())){
+            this.quadrantFirstMove();
+            this.quadrantSecondMove();
+            this.quadrantSecondMove();
+        }
+        else if (this.mover.facing.equals(this.getFirstDirection())){
+            this.quadrantSecondMove();
+            this.quadrantFirstMove();
+            this.quadrantFirstMove();
         }
     }
 
     //Method that navigates the robot to the diagonal
     public boolean navigateToDiagonal (){
+
+        System.out.println("quadrant: " + this.mover.quadrant);
+
         while (this.mover.lastCoord.areEqual() == false){
 
             if (this.checkBlock()){
@@ -53,7 +94,7 @@ public class Navigator {
 
             //This part only works for the first quadrant
             if (this.mover.lastCoord.getX() > this.mover.lastCoord.getY()){
-                if (this.mover.moveLeft() == false){
+                if (this.quadrantSecondMove() == false){
                     this.clientWriter.print("301 SYNTAX ERROR" + this.suffix);
                     this.clientWriter.flush();
                     return false;
@@ -61,7 +102,7 @@ public class Navigator {
             }
             //Y  > X
             else {
-                if (this.mover.moveDown() == false){
+                if (this.quadrantFirstMove() == false){
                     this.clientWriter.print("301 SYNTAX ERROR" + this.suffix);
                     this.clientWriter.flush();
                     return false;
@@ -75,12 +116,12 @@ public class Navigator {
     //A method that navigates robot to the [0:0] on the diagonal
     public boolean navigateToEnd(){
         while(this.mover.lastCoord.isFinal() == false){
-            if (this.mover.moveDown() == false){
+            if (quadrantFirstMove() == false){
                 this.clientWriter.print("301 SYNTAX ERROR" + this.suffix);
                 this.clientWriter.flush();
                 return false;
             }
-            if (this.mover.moveLeft() == false){
+            if (this.quadrantSecondMove() == false){
                 this.clientWriter.print("301 SYNTAX ERROR" + this.suffix);
                 this.clientWriter.flush();
                 return false;

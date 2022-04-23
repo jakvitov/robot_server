@@ -91,6 +91,18 @@ public class Coord {
     }
 
     public Quadrant getQuadrant (){
-        return Quadrant.FIRST;
+        if (this.x >= 0 && this.y >= 0){
+            return Quadrant.SECOND;
+        }
+        else if (this.x < 0 && this.y > 0){
+            return Quadrant.FIRST;
+        }
+        else if (this.x < 0 && this.y < 0){
+            return Quadrant.THIRD;
+        }
+        else if ((this.x > 0) && (this.y < 0)){
+            return Quadrant.FOURTH;
+        }
+        return null;
     }
 }
