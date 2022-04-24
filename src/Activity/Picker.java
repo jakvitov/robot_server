@@ -6,7 +6,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 /**
- * This class is used to pick up the final treasure
+ * This class is used to pick up the final treasure, once we reached [0,0]
  */
 public class Picker {
 
@@ -31,6 +31,8 @@ public class Picker {
         }
     }
 
+
+    //Pickup the final message
     public boolean pickUp (){
 
         this.clientWriter.print("105 GET MESSAGE" + this.suffix);
@@ -56,6 +58,9 @@ public class Picker {
             this.closeClient();
             return false;
         }
+
+        //After we pick up the message we print it to sout
+        System.out.println("The final message: " + message);
 
         //We socessfully picked up the message so we log out
         this.clientWriter.print("106 LOGOUT" + this.suffix);

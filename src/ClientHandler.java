@@ -14,6 +14,8 @@ import java.net.SocketTimeoutException;
 
 /**
  * Client handler takes care of the individual clients in a separate thread
+ * Once a client logs in, this thread starts and it logs the client in and invokes the mover and Picker classes
+ * to navigate him to the [0:0] and pick up the message
  */
 
 public class ClientHandler implements Runnable{
@@ -169,7 +171,7 @@ public class ClientHandler implements Runnable{
                 return false;
             }
         }
-
+        //Now we get the tokenizers client hash from the message
         Tokenizer tokenizer = new Tokenizer(message, this.suffix);
         if (tokenizer.hasMoreTokens() == false){
             System.out.println("Wrong message format: " + message);
@@ -189,7 +191,7 @@ public class ClientHandler implements Runnable{
             this.closeClient();
             return false;
         }
-
+        //Now we check if the two hashes are equal, so we can log in the client
         if (clientHash.equals((hash + this.autKey.getClientKey()) % 65536) == false){
             System.out.println("Server login failed!");
             this.clientWriter.print("300 LOGIN FAILED" + this.suffix);
@@ -202,8 +204,6 @@ public class ClientHandler implements Runnable{
         this.clientWriter.flush();
         return true;
     }
-
-
 
     @Override
     public void run (){

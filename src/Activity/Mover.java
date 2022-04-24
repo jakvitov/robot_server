@@ -12,10 +12,10 @@ import java.net.Socket;
 import java.util.StringTokenizer;
 
 /**
- * This class is used to move the robots around and navigate them to the [0,0] coordinate
- * to pick up the treasure
- *
- *
+ * This class provides robot movement methods, the methods that start by move, move the robot one time in the direction
+ * in the name. The turn and go forward methods are support methods that only send client message about rotation or
+ * straight movement.
+ * While using this class you must first invoke the init method, so we setup the facing and quadrant of the robot.
  */
 
 public class Mover {
@@ -239,7 +239,8 @@ public class Mover {
 
     /**
      * Out main goal is to get the robot to the point where both of the coordinates are equal [x,x], than we can
-     * move him down the diagonal which is the shortest patha at that moment
+     * move him down the diagonal which is the shortest patha at that moment. That is taken care of by the Navigator
+     * class
      * Return true when the robot reaches [0,0]
      */
     public boolean navigator (){
